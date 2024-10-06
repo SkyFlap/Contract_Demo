@@ -6,13 +6,15 @@ from .files import upload_files
 def predict(
     history,
     file_list,
+    api_key,
+    model_name,
     prompt="",
     max_length=4096,
     top_p=0.7,
     temperature=0.95,
 ):
     client = OpenAI(
-        api_key="sk-yfbUaRB9BJNqNYylK6N1GqwznhhL0uSgoIfAmWaZnNSZNotI",
+        api_key=api_key,
         base_url="https://api.moonshot.cn/v1",
     )
     file_messages = upload_files(ast.literal_eval(file_list), client)
@@ -31,7 +33,7 @@ def predict(
             messages.append({"role": "assistant", "content": model_msg})
 
     response = client.chat.completions.create(
-        model="moonshot-v1-128k",
+        model=model_name,
         messages=messages,
         max_tokens=max_length,
         top_p=top_p,

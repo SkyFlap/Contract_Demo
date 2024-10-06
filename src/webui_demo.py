@@ -16,16 +16,25 @@ def create_ui(
     config_dict = read_conf_file(conf_path)
     with gr.Blocks(title="合同Demo 🚀", css=CSS) as demo:
         if demo_mode:
-            gr.HTML(
-                "<h1><center>Literature GPT: A One-stop Web UI for Getting Started with Literature GPT</center></h1>"
-            )
+            gr.HTML("<h1><center>AI-合同Demo演示</center></h1>")
             gr.DuplicateButton(
                 value="Duplicate Space for private use", elem_classes="duplicate-button"
+            )
+        with gr.Row():
+            api_key = gr.Textbox(
+                value=config_dict["KIMI-LLM"]["api_key"],
+                show_label=True,
+                show_copy_button=True,
+            )
+            model_name = gr.Textbox(
+                value=config_dict["KIMI-LLM"]["kimi_model"],
+                show_label=True,
+                show_copy_button=True,
             )
         chatbot = gr.Chatbot(
             latex_delimiters=latex_delimiters_set,
             sanitize_html=False,
-            height=600,
+            height=512,
             show_label=False,
             avatar_images=[
                 "./resources/img/user.png",
@@ -53,7 +62,12 @@ def create_ui(
 
         chat_input.submit(
             user, [chatbot, chat_input], [chatbot, chat_input, file_list]
-        ).then(predict, [chatbot, file_list], chatbot, api_name="bot_response").then(
+        ).then(
+            predict,
+            [chatbot, file_list, api_key, model_name],
+            chatbot,
+            api_name="bot_response",
+        ).then(
             lambda: gr.MultimodalTextbox(interactive=True), None, [chat_input]
         )
     return demo
